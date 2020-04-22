@@ -1,12 +1,12 @@
 #!/bin/bash
-/usr/sbin/sshd -D &
+##/usr/sbin/sshd -D &
 
-PATH="$PATH:/opt/openmpi/bin/"
-BASENAME="${0##*/}"
-log () {
-  echo "${BASENAME} - ${1}"
-}
-HOST_FILE_PATH="/tmp/hostfile"
+##PATH="$PATH:/opt/openmpi/bin/"
+##BASENAME="${0##*/}"
+##log () {
+##  echo "${BASENAME} - ${1}"
+##}
+##HOST_FILE_PATH="/tmp/hostfile"
 #aws s3 cp $S3_INPUT $SCRATCH_DIR
 #tar -xvf $SCRATCH_DIR/*.tar.gz -C $SCRATCH_DIR
 
