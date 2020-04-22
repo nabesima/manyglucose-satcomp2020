@@ -2,13 +2,17 @@
 ##/usr/sbin/sshd -D &
 
 ##PATH="$PATH:/opt/openmpi/bin/"
-##BASENAME="${0##*/}"
-##log () {
-##  echo "${BASENAME} - ${1}"
-##}
+BASENAME="${0##*/}"
+log () {
+  echo "${BASENAME} - ${1}"
+}
 ##HOST_FILE_PATH="/tmp/hostfile"
 #aws s3 cp $S3_INPUT $SCRATCH_DIR
 #tar -xvf $SCRATCH_DIR/*.tar.gz -C $SCRATCH_DIR
+
+## Detect the number of physical cores
+NUM_PHYSICAL_CORES=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
+log "# of physical cores = $NUM_PHYSICAL_CORES"
 
 sleep 2
 ##echo main node: ${AWS_BATCH_JOB_MAIN_NODE_INDEX}
@@ -23,8 +27,6 @@ else
   aws s3 cp s3://${S3_BKT}/${COMP_S3_PROBLEM_PATH} supervised-scripts/test.cnf
 fi
 
-## Detect the number of physical cores
-NUM_PHYSICAL_CORES=`grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}'`
 
 ## Main
 time /manyglucose-4.1-60/parallel manyglucose-4.1-60 -model -real-time-lim=28800 -nthreads=${NUM_PHYSICAL_CORES} supervised-scripts/test.cnf
