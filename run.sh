@@ -29,7 +29,9 @@ fi
 
 
 ## Main
-time /manyglucose-4.1-60/parallel/manyglucose-4.1-60 -model -real-time-lim=28800 -nthreads=${NUM_PHYSICAL_CORES} supervised-scripts/test.cnf
+time /manyglucose-4.1-60/parallel/manyglucose-4.1-60 -verb=0 -model -real-time-lim=28800 -nthreads=${NUM_PHYSICAL_CORES} supervised-scripts/test.cnf
+
+exit 0
 
 ### Set child by default switch to main if on main node container
 ##NODE_TYPE="child"
