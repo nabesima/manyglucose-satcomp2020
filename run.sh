@@ -17,6 +17,8 @@ if [ "${NODE_TYPE}" = "child" ]; then
     exit 0
 fi
 
+sleep 2 # Avoid completing main node before exiting child node
+
 # Detect the number of local and physical cores
 NUM_LOGICAL_CORES=$(lscpu -p | egrep -v '^#' | wc -l)
 NUM_PHYSICAL_CORES=$(lscpu -p | egrep -v '^#' | sort -u -t, -k 2,4 | wc -l)
@@ -40,14 +42,14 @@ fi
 ## Main
 COMMAND="/manyglucose-4.1-60/parallel/manyglucose-4.1-60 -verb=0 -model -real-time-lim=5000 -nthreads=${NUM_THREADS} supervised-scripts/test.cnf"
 log "Invoking solver: ${COMMAND}"
-time ${COMMAND} &> test.log
+(time ${COMMAND}) &> test.log
 RET_CODE=$?
 
 if [ -z "${COMP_S3_RESULT_PATH}" ]; then
     cat test.log
 else
     cat test.log
-    aws s3 cp supervised-scripts/test.log s3://${S3_BKT}/${COMP_S3_RESULT_PATH}
+    aws s3 cp test.log s3://${S3_BKT}/${COMP_S3_RESULT_PATH}
 fi
 
 case "${RET_CODE}" in
