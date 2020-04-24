@@ -13,7 +13,8 @@ fi
 
 # If host is child node, then exit
 if [ "${NODE_TYPE}" = "child" ]; then
-   exit 0
+    log "Immediately terminated since this is a child node"
+    exit 0
 fi
 
 # Detect the number of local and physical cores
@@ -37,13 +38,16 @@ else
 fi
 
 ## Main
-time /manyglucose-4.1-60/parallel/manyglucose-4.1-60 -verb=0 -model -real-time-lim=5000 -nthreads=${NUM_THREADS} supervised-scripts/test.cnf > supervised-scripts/test.log 2>&1
+COMMAND="/manyglucose-4.1-60/parallel/manyglucose-4.1-60 -verb=0 -model -real-time-lim=5000 -nthreads=${NUM_THREADS} supervised-scripts/test.cnf"
+log "Invoking solver: ${COMMAND}"
+time ${COMMAND} &> test.log
 RET_CODE=$?
 
 if [ -z "${COMP_S3_RESULT_PATH}" ]; then
-    cat supervised-scripts/test.log
+    cat test.log
 else
-  aws s3 cp supervised-scripts/test.log s3://${S3_BKT}/${COMP_S3_RESULT_PATH}
+    cat test.log
+    aws s3 cp supervised-scripts/test.log s3://${S3_BKT}/${COMP_S3_RESULT_PATH}
 fi
 
 case "${RET_CODE}" in
