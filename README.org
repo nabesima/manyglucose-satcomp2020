@@ -1,0 +1,5 @@
+#+TITLE: ManyGlucose 4.1-60
+#+AUTHOR: Hidetomo NABESHIMA and Katsumi INOUE
+
+
+
