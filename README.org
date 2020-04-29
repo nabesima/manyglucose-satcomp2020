@@ -1,5 +1,10 @@
 #+TITLE: ManyGlucose 4.1-60
 #+AUTHOR: Hidetomo NABESHIMA and Katsumi INOUE
 
+ManyGlucose 4.1-60 is a deterministic portfolio parallel SAT solver
+for shared memory multi-core systems. Given an instance, a
+deterministic solver has reproducible results in terms of solution
+(satisfying assignment or proof of unsatisfiability) and running
+time. ManyGlucose supports such reproducible behavior.
 
 
