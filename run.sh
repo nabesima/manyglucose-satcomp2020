@@ -26,8 +26,8 @@ log "Host has ${NUM_LOGICAL_CORES} logical and ${NUM_PHYSICAL_CORES} physical co
 
 # Computing Environment of Parallel Track in SAT 2020 Competition:
 #  m4.16xlarge, which has 64 virtual cores and 256GB of memory (32 physical cores)
-# In this branch, we use 32 threads
-NUM_THREADS=32
+# In this branch, we use 64 threads
+NUM_THREADS=64
 
 # If NUM_THREADS is not defined, we use NUM_PHYSICAL_CORES as NUM_THREADS
 if [ -z "${NUM_THREADS}" ]; then
