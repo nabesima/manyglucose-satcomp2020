@@ -5,13 +5,12 @@ ManyGlucose 4.1-60 is a deterministic portfolio parallel SAT solver
 for shared memory multi-core systems. Given an instance, a
 deterministic solver has reproducible results in terms of solution
 (satisfying assignment or proof of unsatisfiability) and running
-time. ManyGlucose supports such reproducible behavior.
-#
-The base solver is [[https://www.labri.fr/perso/lsimon/glucose/][Glucose-Syrup 4.1]] which is a non-deterministic
-parallel SAT solver. To achieve reproducible behavior, ManyGlucose has
-a special mechanism called /delayed clause exchange/ and accurate
-estimation of execution time of clause exchange interval between
-solvers. Please see the following paper for the details:
+time. ManyGlucose supports such reproducible behavior. The base
+solver is [[https://www.labri.fr/perso/lsimon/glucose/][Glucose-Syrup 4.1]] which is a non-deterministic parallel SAT
+solver. To achieve reproducible behavior, ManyGlucose has a special
+mechanism called /delayed clause exchange/ and accurate estimation of
+execution time of clause exchange interval between solvers. Please see
+the following paper for the details:
 
 #+begin_quote
 Hidetomo Nabeshima and Katsumi Inoue, "Reproducible Efficient Parallel
