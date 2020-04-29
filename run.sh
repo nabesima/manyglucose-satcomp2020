@@ -24,6 +24,11 @@ NUM_LOGICAL_CORES=$(lscpu -p | egrep -v '^#' | wc -l)
 NUM_PHYSICAL_CORES=$(lscpu -p | egrep -v '^#' | sort -u -t, -k 2,4 | wc -l)
 log "Host has ${NUM_LOGICAL_CORES} logical and ${NUM_PHYSICAL_CORES} physical cores"
 
+# Computing Environment of Parallel Track in SAT 2020 Competition:
+#  m4.16xlarge, which has 64 virtual cores and 256GB of memory (32 physical cores)
+# In this branch, we use 32 threads
+NUM_THREADS=32
+
 # If NUM_THREADS is not defined, we use NUM_PHYSICAL_CORES as NUM_THREADS
 if [ -z "${NUM_THREADS}" ]; then
     NUM_THREADS=${NUM_PHYSICAL_CORES}
