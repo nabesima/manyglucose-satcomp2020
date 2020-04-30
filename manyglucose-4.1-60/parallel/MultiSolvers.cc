@@ -1590,15 +1590,18 @@ lbool MultiSolvers::solve_(bool do_simp, bool turn_off_simp) {
 
     // DEBUG
     printf("c exited main loop in MultiSolver\n");
+    fflush(stdout);
     
     (void) pthread_mutex_unlock(&m);
 
     for(i = 0; i < nbsolvers; i++) { // Wait for all threads to finish
         // DEBUG
         printf("c waiting exit the thread %d\n", i);
+        fflush(stdout);
         pthread_join(*threads[i], NULL);
         free(threads[i]);        // added by nabesima
         printf("c thread %d is exited\n", i);
+        fflush(stdout);
     }
 
     assert(sharedcomp != NULL);
