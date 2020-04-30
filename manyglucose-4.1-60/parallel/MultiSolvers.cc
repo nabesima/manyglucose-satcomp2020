@@ -1594,6 +1594,10 @@ lbool MultiSolvers::solve_(bool do_simp, bool turn_off_simp) {
     
     (void) pthread_mutex_unlock(&m);
 
+    // DEBUG
+    printStats();
+    fflush(stdout);
+
     for(i = 0; i < nbsolvers; i++) { // Wait for all threads to finish
         // DEBUG
         printf("c waiting exit the thread %d\n", i);

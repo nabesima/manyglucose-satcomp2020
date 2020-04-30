@@ -794,6 +794,10 @@ lbool ParallelSolver::solve_(bool do_simp, bool turn_off_simp) {
         curr_restarts++;
     }
 
+    // DEBUG
+    printf("Thread %d is exited. withinBudget() = %d, shouldFinish() = %d\n", thn, withinBudget(), shouldFinish());
+    fflush(stdout);
+
     completeCurrPeriod();    // added by nabesima
 
     if (verbosity >= 1)
