@@ -47,13 +47,10 @@ fi
 ## Main
 COMMAND="/manyglucose-4.1-60/parallel/manyglucose-4.1-60 -verb=0 -model -real-time-lim=5000 -nthreads=${NUM_THREADS} supervised-scripts/test.cnf"
 log "Invoking solver: ${COMMAND}"
-(time ${COMMAND}) &> test.log
+(time ${COMMAND}) 2>&1 | tee test.log
 RET_CODE=$?
 
-if [ -z "${COMP_S3_RESULT_PATH}" ]; then
-    cat test.log
-else
-    cat test.log
+if [ -n "${COMP_S3_RESULT_PATH}" ]; then
     aws s3 cp test.log s3://${S3_BKT}/${COMP_S3_RESULT_PATH}
 fi
 
