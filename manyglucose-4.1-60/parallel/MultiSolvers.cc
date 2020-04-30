@@ -785,18 +785,19 @@ void MultiSolvers::printFinalStats() {
         printf("|------------");
     printf("|\n");
 
-    if (verb >= 2) {
+    if (verb >= 2) 
         printThreadParameters();
 
-        // added by gotou
-        printf("c\nc\n");
-        printf("c [Basic stats]\n");
+    // added by gotou
+    printf("c\nc\n");
+    printf("c [Basic stats]\n");
 
-        // added by nabesima
-        printf("c Threads : %d\n", solvers.size());
+    // added by nabesima
+    printf("c Threads : %d\n", solvers.size());
 
-        if ( winner != -1 ) printf("c Winner : %d\n", winner);
+    if ( winner != -1 ) printf("c Winner : %d\n", winner);
 
+    if (verb >= 2) {
         for(int i = 0; i < solvers.size(); i++)
             printf("c FreeVars_%d : %" PRIu64"\n", i, solvers[i]->stats[numFreeVars]);
         for(int i = 0; i < solvers.size(); i++)
