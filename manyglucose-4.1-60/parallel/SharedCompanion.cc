@@ -174,7 +174,7 @@ bool SharedCompanion::jobFinished(int64_t periods) {
     pthread_mutex_lock(&mutexJobFinished);
     // modified by nabesima
     //ret = bjobFinished;
-    ret = bjobFinished && jobFinishedPeriod + margin < periods;
+    ret = bjobFinished && (jobStatus == l_Undef || jobFinishedPeriod + margin < periods);
     pthread_mutex_unlock(&mutexJobFinished);
     return ret;
 }
