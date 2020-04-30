@@ -45,7 +45,7 @@ else
 fi
 
 ## Main
-COMMAND="/manyglucose-4.1-60/parallel/manyglucose-4.1-60 -verb=0 -model -real-time-lim=5000 -nthreads=${NUM_THREADS} supervised-scripts/test.cnf"
+COMMAND="/manyglucose-4.1-60/parallel/manyglucose-4.1-60 -verb=1 -model -real-time-lim=5000 -nthreads=${NUM_THREADS} supervised-scripts/test.cnf"
 log "Invoking solver: ${COMMAND}"
 (time ${COMMAND}) 2>&1 | tee test.log
 RET_CODE=$?
