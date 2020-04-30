@@ -714,8 +714,8 @@ bool SimpSolver::eliminate(bool turn_off_elim)
 
     int toPerform = clauses.size()<=4800000;
 
-    if(!toPerform) {
-        printf("c | Too many clauses... No preprocessing                                                                  |\n");
+    if(!toPerform && verbosity) {
+        printf("c |  Too many clauses... No preprocessing                                                                 |\n");
     }
 
     while (toPerform && (n_touched > 0 || bwdsub_assigns < trail.size() || elim_heap.size() > 0)){
@@ -847,7 +847,7 @@ void SimpSolver::garbageCollect()
     relocAll(to);
     Solver::relocAll(to);
     if (verbosity >= 2)
-        printf("|  Garbage collection:   %12d bytes => %12d bytes             |\n",
+        printf("c |  Garbage collection:   %12d bytes => %12d bytes                                       |\n",
                ca.size()*ClauseAllocator::Unit_Size, to.size()*ClauseAllocator::Unit_Size);
     to.moveTo(ca);
 }

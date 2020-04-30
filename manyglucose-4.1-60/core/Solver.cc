@@ -2435,7 +2435,7 @@ void Solver::garbageCollect() {
     ClauseAllocator to(ca.size() - ca.wasted());
     relocAll(to);
     if(verbosity >= 2)
-        printf("|  Garbage collection:   %12d bytes => %12d bytes             |\n",
+        printf("c |  Garbage collection:   %12d bytes => %12d bytes                                       |\n",
                ca.size() * ClauseAllocator::Unit_Size, to.size() * ClauseAllocator::Unit_Size);
     to.moveTo(ca);
 }

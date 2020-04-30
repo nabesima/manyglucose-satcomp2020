@@ -334,7 +334,12 @@ bool MultiSolvers::eliminate() {
     s->use_simplification = use_simplification;
     if(!use_simplification) return true;
 
-    return s->eliminate(true);
+    // modified by nabesima
+    //return s->eliminate(true);
+    s->verbosity = verb;
+    bool ret = s->eliminate(true);
+    s->verbosity = 0;
+    return ret;
 }
 
 // TODO: Use a template here
@@ -780,401 +785,403 @@ void MultiSolvers::printFinalStats() {
         printf("|------------");
     printf("|\n");
 
-    printThreadParameters();
+    if (verb >= 2) {
+        printThreadParameters();
 
-    // added by gotou
-    printf("c\nc\n");
-    printf("c [Basic stats]\n");
+        // added by gotou
+        printf("c\nc\n");
+        printf("c [Basic stats]\n");
 
-    // added by nabesima
-    printf("c Threads : %d\n", solvers.size());
+        // added by nabesima
+        printf("c Threads : %d\n", solvers.size());
 
-    if ( winner != -1 ) printf("c Winner : %d\n", winner);
+        if ( winner != -1 ) printf("c Winner : %d\n", winner);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c FreeVars_%d : %" PRIu64"\n", i, solvers[i]->stats[numFreeVars]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Clauses_%d : %" PRIu64"\n", i, solvers[i]->stats[numClauses]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Literals_%d : %" PRIu64"\n", i, solvers[i]->stats[numLiterals]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Unaries_%d : %" PRIu64"\n", i, solvers[i]->stats[nbUn]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Binaries_%d : %" PRIu64"\n", i, solvers[i]->stats[nbBin]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Glues_%d : %" PRIu64"\n", i, solvers[i]->stats[nbDL2]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c FreeVars_%d : %" PRIu64"\n", i, solvers[i]->stats[numFreeVars]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Clauses_%d : %" PRIu64"\n", i, solvers[i]->stats[numClauses]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Literals_%d : %" PRIu64"\n", i, solvers[i]->stats[numLiterals]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Unaries_%d : %" PRIu64"\n", i, solvers[i]->stats[nbUn]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Binaries_%d : %" PRIu64"\n", i, solvers[i]->stats[nbBin]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Glues_%d : %" PRIu64"\n", i, solvers[i]->stats[nbDL2]);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Conflicts_%d : %" PRIu64"\n", i, solvers[i]->conflicts);
-    printf("c Conflicts_total : %lld\n", totalconf);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Decisions_%d : %" PRIu64"\n", i, solvers[i]->decisions);
-    printf("c Decisions_total : %lld\n", totaldecs);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Propagations_%d : %" PRIu64"\n", i, solvers[i]->propagations);
-    printf("c Propagations_total : %lld\n", totalprops);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ReduceDBs_%d : %" PRIu64"\n", i, solvers[i]->stats[nbReduceDB]);
-    printf("c ReduceDBs_total : %lld\n", totalreducedbs);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SimpDBs_%d : %" PRIu64"\n", i, solvers[i]->stats[nbSimplifyDB]);
-    printf("c SimpDBs_total : %lld\n", totalsimpdbs);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Restarts_%d : %" PRIu64"\n", i, solvers[i]->starts);
-    printf("c Restarts_total : %lld\n", totalrestarts);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RestartBlockings_%d : %" PRIu64"\n", i, solvers[i]->stats[nbstopsrestarts]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Conflicts_%d : %" PRIu64"\n", i, solvers[i]->conflicts);
+        printf("c Conflicts_total : %lld\n", totalconf);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Decisions_%d : %" PRIu64"\n", i, solvers[i]->decisions);
+        printf("c Decisions_total : %lld\n", totaldecs);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Propagations_%d : %" PRIu64"\n", i, solvers[i]->propagations);
+        printf("c Propagations_total : %lld\n", totalprops);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ReduceDBs_%d : %" PRIu64"\n", i, solvers[i]->stats[nbReduceDB]);
+        printf("c ReduceDBs_total : %lld\n", totalreducedbs);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SimpDBs_%d : %" PRIu64"\n", i, solvers[i]->stats[nbSimplifyDB]);
+        printf("c SimpDBs_total : %lld\n", totalsimpdbs);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Restarts_%d : %" PRIu64"\n", i, solvers[i]->starts);
+        printf("c Restarts_total : %lld\n", totalrestarts);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RestartBlockings_%d : %" PRIu64"\n", i, solvers[i]->stats[nbstopsrestarts]);
 
-    // added by nabesima
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ForcedImports_%d : %" PRIu64"\n", i, solvers[i]->stats[numForcedImports]);
-    printf("c ForcedImports_total : %lld\n", totalforcedimports);
+        // added by nabesima
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ForcedImports_%d : %" PRIu64"\n", i, solvers[i]->stats[numForcedImports]);
+        printf("c ForcedImports_total : %lld\n", totalforcedimports);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropsLitFullScans_%d : %" PRIu64"\n", i, solvers[i]->num_lit_scans);
-    printf("c PropsLitFullScans_total : %lld\n", totalprop_lit_full_scans);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropsLitFullScans_%d : %" PRIu64"\n", i, solvers[i]->num_lit_scans);
+        printf("c PropsLitFullScans_total : %lld\n", totalprop_lit_full_scans);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c LitScanFractions_%d : %" PRIu64"\n", i, solvers[i]->stats[sumLitScanFractinos]);
-    printf("c LitScanFractions_total : %lld\n", totalprop_lit_scan_fracts);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c LitScanFractions_%d : %" PRIu64"\n", i, solvers[i]->stats[sumLitScanFractinos]);
+        printf("c LitScanFractions_total : %lld\n", totalprop_lit_scan_fracts);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropagationLitScans_%d : %" PRIu64"\n", i, solvers[i]->stats[sumPropagationLitScans]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalysisLitScans_%d : %" PRIu64"\n", i, solvers[i]->stats[sumAnalysisLitScans]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ReductionLitScans_%d : %" PRIu64"\n", i, solvers[i]->stats[sumReductionLitScans]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SimplificationLitScans_%d : %" PRIu64"\n", i, solvers[i]->stats[sumSimplificationLitScans]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SharingLitScans_%d : %" PRIu64"\n", i, solvers[i]->stats[sumSharingLitScans]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropagationLitScans_%d : %" PRIu64"\n", i, solvers[i]->stats[sumPropagationLitScans]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalysisLitScans_%d : %" PRIu64"\n", i, solvers[i]->stats[sumAnalysisLitScans]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ReductionLitScans_%d : %" PRIu64"\n", i, solvers[i]->stats[sumReductionLitScans]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SimplificationLitScans_%d : %" PRIu64"\n", i, solvers[i]->stats[sumSimplificationLitScans]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SharingLitScans_%d : %" PRIu64"\n", i, solvers[i]->stats[sumSharingLitScans]);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Periods_%d : %" PRIu64"\n", i, solvers[i]->periods);
-    printf("c Periods_total : %lld\n", totalperiods);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Periods_%d : %" PRIu64"\n", i, solvers[i]->periods);
+        printf("c Periods_total : %lld\n", totalperiods);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Margin_%d : %" PRIu64"\n", i, solvers[i]->margin);
-    printf("c Margin_total : %lld\n", totalmargin);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Margin_%d : %" PRIu64"\n", i, solvers[i]->margin);
+        printf("c Margin_total : %lld\n", totalmargin);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Exported_%d : %" PRIu64"\n", i, solvers[i]->stats[nbexported]);
-    printf("c Exported_total : %" PRIu64"\n", exported);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Exported_%d : %" PRIu64"\n", i, solvers[i]->stats[nbexported]);
+        printf("c Exported_total : %" PRIu64"\n", exported);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Imported_%d : %" PRIu64"\n", i, solvers[i]->stats[nbimported]);
-    printf("c Imported_total : %" PRIu64"\n", imported);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Imported_%d : %" PRIu64"\n", i, solvers[i]->stats[nbimported]);
+        printf("c Imported_total : %" PRIu64"\n", imported);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Good_%d : %" PRIu64"\n", i, solvers[i]->stats[nbImportedGoodClauses]);
-    printf("c Good_total : %" PRIu64"\n", importedGood);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Good_%d : %" PRIu64"\n", i, solvers[i]->stats[nbImportedGoodClauses]);
+        printf("c Good_total : %" PRIu64"\n", importedGood);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Purge_%d : %" PRIu64"\n", i, solvers[i]->stats[nbimportedInPurgatory]);
-    printf("c Purge_total : %" PRIu64"\n", importedPurg);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Purge_%d : %" PRIu64"\n", i, solvers[i]->stats[nbimportedInPurgatory]);
+        printf("c Purge_total : %" PRIu64"\n", importedPurg);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Promoted_%d : %" PRIu64"\n", i, solvers[i]->stats[nbPromoted]);
-    printf("c Promoted_total : %" PRIu64"\n", promoted);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Promoted_%d : %" PRIu64"\n", i, solvers[i]->stats[nbPromoted]);
+        printf("c Promoted_total : %" PRIu64"\n", promoted);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Remove_Imp_%d : %" PRIu64"\n", i, solvers[i]->stats[nbRemovedUnaryWatchedClauses]);
-    printf("c Remove_Imp_total : %" PRIu64"\n", removedimported);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Remove_Imp_%d : %" PRIu64"\n", i, solvers[i]->stats[nbRemovedUnaryWatchedClauses]);
+        printf("c Remove_Imp_total : %" PRIu64"\n", removedimported);
 
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c Blocked_Reuse_%d : %" PRIu64"\n", i, solvers[i]->nbNotExportedBecauseDirectlyReused);
-    printf("c Blocked_Reuse_total : %" PRIu64"\n", blockedreused);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c Blocked_Reuse_%d : %" PRIu64"\n", i, solvers[i]->nbNotExportedBecauseDirectlyReused);
+        printf("c Blocked_Reuse_total : %" PRIu64"\n", blockedreused);
 
-    // added by nabesima
-    printf("c\n");
-    printf("c [Executed number of each blocks]\n");
+        // added by nabesima
+        printf("c\n");
+        printf("c [Executed number of each blocks]\n");
 
-    // [search]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SearchLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[SearchLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SearchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[SearchLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SearchConflictCount_%d : %" PRIu64"\n", i, solvers[i]->stats[SearchConflictCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SearchDecisionCount_%d : %" PRIu64"\n", i, solvers[i]->stats[SearchDecisionCount]);
-    // [propagation]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropCleanWatchLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropCleanWatchLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropCleanWatchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[PropCleanWatchLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropQueueLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropQueueLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropBinWatchLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropBinWatchLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropBinWatchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[PropBinWatchLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropBinWatchLoopInsideConf_%d : %" PRIu64"\n", i, solvers[i]->stats[PropBinWatchLoopInsideConf]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropBinWatchLoopInsideEnq_%d : %" PRIu64"\n", i, solvers[i]->stats[PropBinWatchLoopInsideEnq]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropBinWatchLoopInsideNext_%d : %" PRIu64"\n", i, solvers[i]->stats[PropBinWatchLoopInsideNext]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropWatchLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropWatchLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropWatchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[PropWatchLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropWatchLoopInsideNext_%d : %" PRIu64"\n", i, solvers[i]->stats[PropWatchLoopInsideNext]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropWatchLoopInsideBlocker_%d : %" PRIu64"\n", i, solvers[i]->stats[PropWatchLoopInsideBlocker]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropClauseLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[PropClauseLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropClauseLoopBreakCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropClauseLoopBreakCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropWatchLoopCount_%d : %" PRIu64 "\n", i, solvers[i]->stats[UnaryPropWatchLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropWatchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropWatchLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropWatchLoopInsideBlocker_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropWatchLoopInsideBlocker]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropClauseLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropClauseLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropClauseLoopBreakCount_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropClauseLoopBreakCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropConfClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropConfClauseLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropConfClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropConfClauseLoopInside]);
-    // [analysis]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeLoopCount_%d : %" PRIu64 "\n", i, solvers[i]->stats[AnalyzeLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeClauseLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeClauseLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeOutMinLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeOutMinLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeOutMinLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeOutMinLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeOutLBDLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeOutLBDLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeOutLBDLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeOutLBDLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeLastDecLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeLastDecLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeLastDecLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeLastDecLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c LitRedLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[LitRedLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c LitRedClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[LitRedClauseLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c LitRedClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[LitRedClauseLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c MinBinResCount_%d : %" PRIu64"\n", i, solvers[i]->stats[MinBinResCount]);
-    // [reduction]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedLearntCompCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RedLearntCompCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedLearntCompInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RedLearntCompInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedLearntLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RedLearntLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedLearntLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RedLearntLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedUWLearntCompCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RedUWLearntCompCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedUWLearntCompInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RedUWLearntCompInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedUWLearntLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RedUWLearntLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedUWLearntLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RedUWLearntLoopInside]);
-    // [simplification]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SimpRmSatClausesLoopCount_%d : %" PRIu64 "\n", i, solvers[i]->stats[SimpRmSatClausesLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SimpClauseLoopCount_%d : %" PRIu64 "\n", i, solvers[i]->stats[SimpClauseLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SimpClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[SimpClauseLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SimpVarHeapLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[SimpVarHeapLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SimpVarHeapLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[SimpVarHeapLoopInside]);
-    // [sharing]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ExpUnaryClauseCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ExpUnaryClauseCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ExpClauseDuringSearchCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ExpClauseDuringSearchCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ExpClauseDuringSearchInside_%d : %" PRIu64"\n", i, solvers[i]->stats[ExpClauseDuringSearchInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ExpClauseDuringAnalysisCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ExpClauseDuringAnalysisCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ExpClauseDuringAnalysisInside_%d : %" PRIu64"\n", i, solvers[i]->stats[ExpClauseDuringAnalysisInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ImpThreadLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ImpThreadLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ImpQueueLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ImpQueueLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ImpClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ImpClauseLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ImpClauseLitLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ImpClauseLitLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ImpClauseLitLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[ImpClauseLitLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ApplyImportedClausesLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ApplyImportedClausesLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ApplyImportedClausesLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[ApplyImportedClausesLoopInside]);
-    // [reloc]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RelocCleanWatchLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RelocCleanWatchLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RelocCleanWatchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RelocCleanWatchLoopInside]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RelocLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RelocLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RelocLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RelocLoopInside]);
-    // [detach]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c DetachLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[DetachLoopCount]);
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c DetachLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[DetachLoopInside]);
+        // [search]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SearchLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[SearchLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SearchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[SearchLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SearchConflictCount_%d : %" PRIu64"\n", i, solvers[i]->stats[SearchConflictCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SearchDecisionCount_%d : %" PRIu64"\n", i, solvers[i]->stats[SearchDecisionCount]);
+        // [propagation]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropCleanWatchLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropCleanWatchLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropCleanWatchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[PropCleanWatchLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropQueueLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropQueueLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropBinWatchLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropBinWatchLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropBinWatchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[PropBinWatchLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropBinWatchLoopInsideConf_%d : %" PRIu64"\n", i, solvers[i]->stats[PropBinWatchLoopInsideConf]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropBinWatchLoopInsideEnq_%d : %" PRIu64"\n", i, solvers[i]->stats[PropBinWatchLoopInsideEnq]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropBinWatchLoopInsideNext_%d : %" PRIu64"\n", i, solvers[i]->stats[PropBinWatchLoopInsideNext]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropWatchLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropWatchLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropWatchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[PropWatchLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropWatchLoopInsideNext_%d : %" PRIu64"\n", i, solvers[i]->stats[PropWatchLoopInsideNext]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropWatchLoopInsideBlocker_%d : %" PRIu64"\n", i, solvers[i]->stats[PropWatchLoopInsideBlocker]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropClauseLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[PropClauseLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropClauseLoopBreakCount_%d : %" PRIu64"\n", i, solvers[i]->stats[PropClauseLoopBreakCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropWatchLoopCount_%d : %" PRIu64 "\n", i, solvers[i]->stats[UnaryPropWatchLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropWatchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropWatchLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropWatchLoopInsideBlocker_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropWatchLoopInsideBlocker]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropClauseLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropClauseLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropClauseLoopBreakCount_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropClauseLoopBreakCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropConfClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropConfClauseLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropConfClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[UnaryPropConfClauseLoopInside]);
+        // [analysis]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeLoopCount_%d : %" PRIu64 "\n", i, solvers[i]->stats[AnalyzeLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeClauseLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeClauseLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeOutMinLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeOutMinLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeOutMinLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeOutMinLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeOutLBDLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeOutLBDLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeOutLBDLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeOutLBDLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeLastDecLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeLastDecLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeLastDecLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[AnalyzeLastDecLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c LitRedLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[LitRedLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c LitRedClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[LitRedClauseLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c LitRedClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[LitRedClauseLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c MinBinResCount_%d : %" PRIu64"\n", i, solvers[i]->stats[MinBinResCount]);
+        // [reduction]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedLearntCompCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RedLearntCompCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedLearntCompInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RedLearntCompInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedLearntLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RedLearntLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedLearntLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RedLearntLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedUWLearntCompCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RedUWLearntCompCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedUWLearntCompInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RedUWLearntCompInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedUWLearntLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RedUWLearntLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedUWLearntLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RedUWLearntLoopInside]);
+        // [simplification]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SimpRmSatClausesLoopCount_%d : %" PRIu64 "\n", i, solvers[i]->stats[SimpRmSatClausesLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SimpClauseLoopCount_%d : %" PRIu64 "\n", i, solvers[i]->stats[SimpClauseLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SimpClauseLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[SimpClauseLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SimpVarHeapLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[SimpVarHeapLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SimpVarHeapLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[SimpVarHeapLoopInside]);
+        // [sharing]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ExpUnaryClauseCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ExpUnaryClauseCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ExpClauseDuringSearchCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ExpClauseDuringSearchCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ExpClauseDuringSearchInside_%d : %" PRIu64"\n", i, solvers[i]->stats[ExpClauseDuringSearchInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ExpClauseDuringAnalysisCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ExpClauseDuringAnalysisCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ExpClauseDuringAnalysisInside_%d : %" PRIu64"\n", i, solvers[i]->stats[ExpClauseDuringAnalysisInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ImpThreadLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ImpThreadLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ImpQueueLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ImpQueueLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ImpClauseLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ImpClauseLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ImpClauseLitLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ImpClauseLitLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ImpClauseLitLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[ImpClauseLitLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ApplyImportedClausesLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[ApplyImportedClausesLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ApplyImportedClausesLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[ApplyImportedClausesLoopInside]);
+        // [reloc]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RelocCleanWatchLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RelocCleanWatchLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RelocCleanWatchLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RelocCleanWatchLoopInside]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RelocLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[RelocLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RelocLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[RelocLoopInside]);
+        // [detach]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c DetachLoopCount_%d : %" PRIu64"\n", i, solvers[i]->stats[DetachLoopCount]);
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c DetachLoopInside_%d : %" PRIu64"\n", i, solvers[i]->stats[DetachLoopInside]);
 
-    printf("c\n");
+        printf("c\n");
 #ifdef MEASURE_TIME
-    printf("c [Running time for each blocks]\n");
+        printf("c [Running time for each blocks]\n");
 
-    // [search]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SearchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SearchLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SearchConflictTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SearchConflict));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SearchDecisionTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SearchDecision));
-    // [propagation]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropCleanWatchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropCleanWatchLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropQueueLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropQueueLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropBinWatchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropBinWatchLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropWatchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropWatchLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropClauseLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c PropClauseLoopBreakTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropClauseLoopBreak));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropWatchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(UnaryPropWatchLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(UnaryPropClauseLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropClauseLoopBreakTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(UnaryPropClauseLoopBreak));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c UnaryPropConfClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(UnaryPropConfClauseLoop));
-    // [analysis]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(AnalyzeLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(AnalyzeClauseLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeOutMinLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(AnalyzeOutMinLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeOutLBDLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(AnalyzeOutLBDLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c AnalyzeLastDecLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(AnalyzeLastDecLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c LitRedLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(LitRedLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c LitRedClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(LitRedClauseLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c MinBinResTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(MinBinRes));
-    // [reduction]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedLearntCompTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RedLearntComp));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedLearntLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RedLearntLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedUWLearntCompTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RedUWLearntComp));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RedUWLearntLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RedUWLearntLoop));
-    // [simplification]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SimpClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SimpClauseLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SimpRmSatClausesLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SimpRmSatClausesLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c SimpVarHeapLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SimpVarHeapLoop));
-    // [sharing]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ExpUnaryClauseTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ExpUnaryClause));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ExpClauseDuringSearchTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ExpClauseDuringSearch));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ExpClauseDuringAnalysisTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ExpClauseDuringAnalysis));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ImpThreadLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ImpThreadLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ImpQueueLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ImpQueueLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ImpClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ImpClauseLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ImpClauseLitLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ImpClauseLitLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c ApplyImportedClausesLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ApplyImportedClausesLoop));
-    // [reloc]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RelocCleanWatchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RelocCleanWatchLoop));
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c RelocLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RelocLoop));
-    // [detach]
-    for(int i = 0; i < solvers.size(); i++)
-        printf("c DetachLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(DetachLoop));
-    // ALL
-    for(int i = 0; i < solvers.size(); i++) {
-        double total = 0.0;
-        for (ProcName j=SearchLoop; j < NumSeqProcTypes; j = static_cast<ProcName>(j + 1))
-            total += solvers[i]->seqchrono.getTime(j);
-        printf("c CumBlockRunningTime_%d : %f\n", i, total);
-    }
+        // [search]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SearchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SearchLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SearchConflictTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SearchConflict));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SearchDecisionTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SearchDecision));
+        // [propagation]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropCleanWatchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropCleanWatchLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropQueueLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropQueueLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropBinWatchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropBinWatchLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropWatchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropWatchLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropClauseLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c PropClauseLoopBreakTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(PropClauseLoopBreak));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropWatchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(UnaryPropWatchLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(UnaryPropClauseLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropClauseLoopBreakTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(UnaryPropClauseLoopBreak));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c UnaryPropConfClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(UnaryPropConfClauseLoop));
+        // [analysis]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(AnalyzeLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(AnalyzeClauseLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeOutMinLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(AnalyzeOutMinLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeOutLBDLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(AnalyzeOutLBDLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c AnalyzeLastDecLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(AnalyzeLastDecLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c LitRedLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(LitRedLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c LitRedClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(LitRedClauseLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c MinBinResTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(MinBinRes));
+        // [reduction]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedLearntCompTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RedLearntComp));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedLearntLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RedLearntLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedUWLearntCompTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RedUWLearntComp));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RedUWLearntLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RedUWLearntLoop));
+        // [simplification]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SimpClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SimpClauseLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SimpRmSatClausesLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SimpRmSatClausesLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c SimpVarHeapLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(SimpVarHeapLoop));
+        // [sharing]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ExpUnaryClauseTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ExpUnaryClause));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ExpClauseDuringSearchTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ExpClauseDuringSearch));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ExpClauseDuringAnalysisTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ExpClauseDuringAnalysis));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ImpThreadLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ImpThreadLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ImpQueueLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ImpQueueLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ImpClauseLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ImpClauseLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ImpClauseLitLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ImpClauseLitLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c ApplyImportedClausesLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(ApplyImportedClausesLoop));
+        // [reloc]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RelocCleanWatchLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RelocCleanWatchLoop));
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c RelocLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(RelocLoop));
+        // [detach]
+        for(int i = 0; i < solvers.size(); i++)
+            printf("c DetachLoopTime_%d : %f\n", i, solvers[i]->seqchrono.getTime(DetachLoop));
+        // ALL
+        for(int i = 0; i < solvers.size(); i++) {
+            double total = 0.0;
+            for (ProcName j=SearchLoop; j < NumSeqProcTypes; j = static_cast<ProcName>(j + 1))
+                total += solvers[i]->seqchrono.getTime(j);
+            printf("c CumBlockRunningTime_%d : %f\n", i, total);
+        }
 #endif
 
-    // added by kanbara
-    if (solvers[0]->div_strategy) {
-        for(int i = 0; i < solvers.size(); i++)
-            printf("c UsedRateTime_%d : %f\n", i, solvers[i]->usedrate_time.getSumTime());
-        for(int i = 0; i < solvers.size(); i++)
-            printf("c OverlapRateTime_%d : %f\n", i, solvers[i]->overlaprate_time.getSumTime());
+        // added by kanbara
+        if (solvers[0]->div_strategy) {
+            for(int i = 0; i < solvers.size(); i++)
+                printf("c UsedRateTime_%d : %f\n", i, solvers[i]->usedrate_time.getSumTime());
+            for(int i = 0; i < solvers.size(); i++)
+                printf("c OverlapRateTime_%d : %f\n", i, solvers[i]->overlaprate_time.getSumTime());
 
-        for(int i = 0; i < solvers.size(); i++) {
-          for(int j = 0; j < solvers[i]->learnts_used_rate.size(); j++) {
-              printf("c LearntsUsedRate_%d_%d : %f\n", i, j, solvers[i]->learnts_used_rate[j]);
-          }
+            for(int i = 0; i < solvers.size(); i++) {
+            for(int j = 0; j < solvers[i]->learnts_used_rate.size(); j++) {
+                printf("c LearntsUsedRate_%d_%d : %f\n", i, j, solvers[i]->learnts_used_rate[j]);
+            }
+            }
+
+            for(int i = 0; i < solvers.size(); i++) {
+            for(int j = 0; j < solvers[i]->import_used_rate.size(); j++) {
+                printf("c ImportUsedRate_%d_%d : %f\n", i, j, solvers[i]->import_used_rate[j]);
+            }
+            }
+
+            for(int i = 0; i < solvers.size(); i++) {
+            for(int j = 0; j < solvers[i]->overlap_rate.size(); j++) {
+                printf("c OverlapRate_%d_%d : %f\n", i, j, solvers[i]->overlap_rate[j]);
+            }
+            }
+
+            for(int i = 0; i < solvers.size(); i++) {
+            for(int j = 0; j < solvers[i]->rnd_freq.size(); j++) {
+                printf("c random_var_freq_%d_%d : %f\n", i, j, solvers[i]->rnd_freq[j]);
+            }
+            }
         }
 
-        for(int i = 0; i < solvers.size(); i++) {
-          for(int j = 0; j < solvers[i]->import_used_rate.size(); j++) {
-              printf("c ImportUsedRate_%d_%d : %f\n", i, j, solvers[i]->import_used_rate[j]);
-          }
-        }
-
-        for(int i = 0; i < solvers.size(); i++) {
-          for(int j = 0; j < solvers[i]->overlap_rate.size(); j++) {
-              printf("c OverlapRate_%d_%d : %f\n", i, j, solvers[i]->overlap_rate[j]);
-          }
-        }
-
-        for(int i = 0; i < solvers.size(); i++) {
-          for(int j = 0; j < solvers[i]->rnd_freq.size(); j++) {
-              printf("c random_var_freq_%d_%d : %f\n", i, j, solvers[i]->rnd_freq[j]);
-          }
-        }
+        printf("c\n");
+        if (solvers[0]->prd_type == prd_type_blocks)
+            printPrdCoeffStats();
     }
-
-    printf("c\n");
-    if (solvers[0]->prd_type == prd_type_blocks)
-        printPrdCoeffStats();
-
+    
     printf("c\n");
     printf("c [Time stats for parallel proccessing]\n");
 
@@ -1477,7 +1484,7 @@ lbool MultiSolvers::solve_(bool do_simp, bool turn_off_simp) {
             printf("c |  all clones generated. Memory = %8.2fMb.                                                           |\n", memUsed());
             printf("c =========================================================================================================\n");
 
-            printThreadParameters(); // added by kanbara
+            if (verb >= 2) printThreadParameters(); // added by kanbara
             fflush(stdout);    // added by nabesima
         }
     }
